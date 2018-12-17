@@ -17,6 +17,8 @@ namespace Onwards
         static KeyboardState kbState;
         static KeyboardState kbLastState;
 
+        static GamePadCapabilities gpCapabilities;
+
         static GamePadState gpState;
         static GamePadState gpLastState;
 
@@ -31,6 +33,11 @@ namespace Onwards
         public static KeyboardState KeyboardLastState
         {
             get { return kbLastState; }
+        }
+
+        public static GamePadCapabilities GamePadCapabilities
+        {
+            get { return gpCapabilities; }
         }
 
         public static GamePadState GamepadState
@@ -48,7 +55,10 @@ namespace Onwards
         public InputHandler(Game game) : base(game)
         {
             kbState = Keyboard.GetState();
-            gpState = GamePad.GetState(PlayerIndex.One);
+
+            gpCapabilities = GamePad.GetCapabilities(PlayerIndex.One);
+            if (gpCapabilities.IsConnected)
+                gpState = GamePad.GetState(PlayerIndex.One);
         }
 
         public override void Initialize()
@@ -108,6 +118,38 @@ namespace Onwards
         public static bool ButtonDown(Buttons btn)
         {
             return gpLastState.IsButtonDown(btn);
+        }
+
+        public static bool LeftStickLeft()
+        {
+            if (gpCapabilities.HasLeftXThumbStick)
+                return gpState.ThumbSticks.Left.X < -0.2f;
+            else
+                return false;
+        }
+        
+        public static bool LeftStickRight()
+        {
+            if (gpCapabilities.HasLeftXThumbStick)
+                return gpState.ThumbSticks.Left.X > 0.2f;
+            else
+                return false;
+        }
+
+        public static bool LeftStickUp()
+        {
+            if (gpCapabilities.HasLeftXThumbStick)
+                return gpState.ThumbSticks.Left.Y > 0.2f;
+            else
+                return false;
+        }
+
+        public static bool LeftStickDown()
+        {
+            if (gpCapabilities.HasLeftXThumbStick)
+                return gpState.ThumbSticks.Left.Y < -0.2f;
+            else
+                return false;
         }
         #endregion
     }

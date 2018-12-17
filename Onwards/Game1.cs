@@ -10,7 +10,7 @@ namespace Onwards
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         public static ContentManager myContent;
-        MapManager mapManager;
+        BackgroundSpriteManager bgManager;
         
         public Game1()
         {
@@ -21,14 +21,14 @@ namespace Onwards
 
         protected override void Initialize()
         {
-            mapManager = new MapManager();
+            bgManager = new BackgroundSpriteManager();
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            mapManager.LoadForestContent();
+            bgManager.LoadForestContent();
         }
 
         protected override void UnloadContent()
@@ -41,14 +41,13 @@ namespace Onwards
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-        
-
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            bgManager.DrawBGSprites(spriteBatch);
             base.Draw(gameTime);
         }
     }
