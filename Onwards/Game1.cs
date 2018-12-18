@@ -11,6 +11,7 @@ namespace Onwards
         SpriteBatch spriteBatch;
         public static ContentManager myContent;
         BackgroundSpriteManager bgManager;
+        Camera camera;
         
         public Game1()
         {
@@ -22,6 +23,7 @@ namespace Onwards
         protected override void Initialize()
         {
             bgManager = new BackgroundSpriteManager();
+            camera = new Camera(graphics.GraphicsDevice.Viewport);
             base.Initialize();
         }
 
@@ -41,13 +43,15 @@ namespace Onwards
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            camera.Update();
+
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            bgManager.DrawBGSprites(spriteBatch);
+            bgManager.DrawBGSprites(spriteBatch, camera);
             base.Draw(gameTime);
         }
     }

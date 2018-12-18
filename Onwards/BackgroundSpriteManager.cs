@@ -126,9 +126,9 @@ namespace Onwards
            
         }
 
-        public void DrawBGSprites(SpriteBatch spriteBatch)
+        public void DrawBGSprites(SpriteBatch spriteBatch, Camera camera)
         {
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, camera.Transform);
             foreach (List<BackgroundSprite> sprites in backgroundSprites)
             {
                 DrawSpriteList(spriteBatch, sprites);
