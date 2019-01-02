@@ -63,7 +63,7 @@ namespace Onwards
         {
             viewport = gameViewport;
             position = Vector2.Zero;
-            zoom = 0.4f;
+            zoom = 1.0f;
             rotation = 0.0f;
         }
 

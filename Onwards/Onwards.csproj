@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="BackgroundSprite.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="GameState.cs" />
     <Compile Include="InputHandler.cs" />
     <Compile Include="BackgroundSpriteManager.cs" />
     <Compile Include="Game1.cs" />

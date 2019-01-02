@@ -7,22 +7,27 @@ namespace Onwards
 {
     public class Game1 : Game
     {
+        #region Fields
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        public static ContentManager myContent;
-        BackgroundSpriteManager bgManager;
         Camera camera;
-        
+        public static ContentManager myContent;
+        #endregion
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             myContent = Content;
             Content.RootDirectory = "Content";
+
+            Components.Add(new InputHandler(this));
         }
 
         protected override void Initialize()
         {
-            bgManager = new BackgroundSpriteManager();
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
+            graphics.ApplyChanges();
             camera = new Camera(graphics.GraphicsDevice.Viewport);
             base.Initialize();
         }
@@ -30,7 +35,7 @@ namespace Onwards
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            bgManager.LoadForestContent();
+         
         }
 
         protected override void UnloadContent()
@@ -50,8 +55,7 @@ namespace Onwards
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-            bgManager.DrawBGSprites(spriteBatch, camera);
+            GraphicsDevice.Clear(Color.Crimson);
             base.Draw(gameTime);
         }
     }

@@ -22,23 +22,17 @@ namespace Onwards
                                  fFourForeTex, fFourMidTex,
                                  fFiveForeTex, fFiveMidTex;
 
-        public static BackgroundSprite fBack,
-                                       fMOne,
-                                       fPOne, fPTwo,
-                                       fOneFore, fOneMid,
-                                       fTwoFore, fTwoMid,
-                                       fThreeFore, fThreeMid,
-                                       fFourFore, fFourMid,
-                                       fFiveFore, fFiveMid;
+        public static BackgroundSprite fBackOne, fBackTwo, fBackThree, fBackFour, fBackFive,
+                                       fMOne, fMTwo, fMThree, fMFour, fMFive,
+                                       fPOne, fPTwo, fPThree, fPFour, fPFive,
+                                       fOneFore, fTwoFore, fThreeFore, fFourFore, fFiveFore,
+                                       fOneMid, fTwoMid, fThreeMid, fFourMid, fFiveMid;
 
         //Texture lists for map backgrounds;
         public static List<BackgroundSprite> fPath, fFore, fMid, fMountain, fBackground;
 
-        public static List<List<BackgroundSprite>> backgroundSprites;
-
         public BackgroundSpriteManager()
         {
-            backgroundSprites = new List<List<BackgroundSprite>>();
             fPath = new List<BackgroundSprite>();
             fFore = new List<BackgroundSprite>();
             fMid = new List<BackgroundSprite>();
@@ -63,24 +57,42 @@ namespace Onwards
             fFiveForeTex = Game1.myContent.Load<Texture2D>("Forest/FBFiveFore");
             fFiveMidTex = Game1.myContent.Load<Texture2D>("Forest/FBFiveMid");
 
-            fBack = new BackgroundSprite(fBackTex);
-            fPOne = new BackgroundSprite(fPOneTex);
-            fPTwo = new BackgroundSprite(fPTwoTex);
+            fBackOne = new BackgroundSprite(fBackTex);
+            fBackTwo = new BackgroundSprite(fBackTex);
+            fBackThree = new BackgroundSprite(fBackTex);
+            fBackFour = new BackgroundSprite(fBackTex);
+            fBackFive = new BackgroundSprite(fBackTex);
+
             fMOne = new BackgroundSprite(fMOneTex);
-            fOneFore = new BackgroundSprite(fOneForeTex);
+            fMTwo = new BackgroundSprite(fMOneTex);
+            fMThree = new BackgroundSprite(fMOneTex);
+            fMFour = new BackgroundSprite(fMOneTex);
+            fMFive = new BackgroundSprite(fMOneTex);
+
             fOneMid = new BackgroundSprite(fOneMidTex);
-            fTwoFore = new BackgroundSprite(fTwoForeTex);
             fTwoMid = new BackgroundSprite(fTwoMidTex);
-            fThreeFore = new BackgroundSprite(fThreeForeTex);
             fThreeMid = new BackgroundSprite(fThreeMidTex);
-            fFourFore = new BackgroundSprite(fFourForeTex);
             fFourMid = new BackgroundSprite(fFourMidTex);
-            fFiveFore = new BackgroundSprite(fFiveForeTex);
             fFiveMid = new BackgroundSprite(fFiveMidTex);
+
+            fOneFore = new BackgroundSprite(fOneForeTex);
+            fTwoFore = new BackgroundSprite(fTwoForeTex);
+            fThreeFore = new BackgroundSprite(fThreeForeTex);
+            fFourFore = new BackgroundSprite(fFourForeTex);
+            fFiveFore = new BackgroundSprite(fFiveForeTex);
+
+            fPOne = new BackgroundSprite(fPOneTex);
+            fPTwo = new BackgroundSprite(fPOneTex);
+            fPThree = new BackgroundSprite(fPOneTex);
+            fPFour = new BackgroundSprite(fPTwoTex);
+            fPFive = new BackgroundSprite(fPTwoTex);
 
             //Forest Path Load List
             fPath.Add(fPOne);
             fPath.Add(fPTwo);
+            fPath.Add(fPThree);
+            fPath.Add(fPFour);
+            fPath.Add(fPFive);
             //Forest Foreground Load List
             fFore.Add(fOneFore);
             fFore.Add(fTwoFore);
@@ -95,29 +107,32 @@ namespace Onwards
             fMid.Add(fFiveMid);
             //Forest Mountain Load List
             fMountain.Add(fMOne);
+            fMountain.Add(fMTwo);
+            fMountain.Add(fMThree);
+            fMountain.Add(fMFour);
+            fMountain.Add(fMFive);
             //Forest Background Load List
-            fBackground.Add(fBack);
+            fBackground.Add(fBackOne);
+            fBackground.Add(fBackTwo);
+            fBackground.Add(fBackThree);
+            fBackground.Add(fBackFour);
+            fBackground.Add(fBackFive);
 
-            backgroundSprites.Add(fBackground);
-            backgroundSprites.Add(fMountain);
-            backgroundSprites.Add(fMid);
-            backgroundSprites.Add(fFore);
-            backgroundSprites.Add(fPath);
-
-            foreach (List<BackgroundSprite> sprites in backgroundSprites)
-            {
-                SetupSpritePos(sprites);
-            }
+            SetupSpritePos(fBackground);
+            SetupSpritePos(fMountain);
+            SetupSpritePos(fMid);
+            SetupSpritePos(fFore);
+            SetupSpritePos(fPath);
         }
 
         private void SetupSpritePos(List<BackgroundSprite> bg)
         {
             Vector2 placement = new Vector2(0, 0);
 
-            foreach (BackgroundSprite background in bg)
+            for (var i = 0; i < bg.Count; i++ )
             {
-                background.pos.X = 0f + placement.X;
-                placement.X += background.backgroundImage.Width;
+                bg[i].pos.X += placement.X;
+                placement.X += bg[i].backgroundImage.Width;
             }
         }
 
@@ -128,11 +143,12 @@ namespace Onwards
 
         public void DrawBGSprites(SpriteBatch spriteBatch, Camera camera)
         {
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, camera.Transform);
-            foreach (List<BackgroundSprite> sprites in backgroundSprites)
-            {
-                DrawSpriteList(spriteBatch, sprites);
-            }
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null, camera.Transform);
+            DrawSpriteList(spriteBatch, fBackground);
+            DrawSpriteList(spriteBatch, fMountain);
+            DrawSpriteList(spriteBatch, fMid);
+            DrawSpriteList(spriteBatch, fFore);
+            DrawSpriteList(spriteBatch, fPath);
             spriteBatch.End();
         }
 
