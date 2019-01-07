@@ -81,7 +81,7 @@ namespace Onwards
 
         protected virtual void Input()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            if (InputHandler.KeyDown(Keys.A));
             {
                 position.X += 5f;
             }

@@ -8,47 +8,67 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 
-namespace Onwards
+namespace Onwards.StateManager
 {
-    public abstract partial class GameState : DrawableGameComponent
+    public interface IGameState
     {
-        #region Fields and Properties
+        GameState Tag { get; }
+        PlayerIndex? PlayerIndexInControl { get; set; }
+    }
 
-        List<GameComponent> childComponents;
+    public abstract partial class GameState : DrawableGameComponent, IGameState
+    {
+        #region Fields
+
+        protected GameState tag;
+        protected readonly IStateManager manager;
+        protected ContentManager content;
+        protected readonly List<GameComponent> childComponents;
+
+        protected PlayerIndex? indexInControl;
+
+        public PlayerIndex? PlayerIndexInControl
+        {
+            get { return indexInControl; }
+            set { indexInControl = value; }
+        }
+
+        #endregion
+
+        #region Properties
 
         public List<GameComponent> Components
         {
             get { return childComponents; }
         }
 
-        GameState tag;
-
         public GameState Tag
         {
             get { return tag; }
         }
 
-        protected GameStateManager StateManager;
-
         #endregion
 
         #region Constructor
 
-        public GameState(Game game, GameStateManager manager) 
-            : base(game)
+        public GameState(Game game)
+            :base(game)
         {
-            StateManager = manager;
-            childComponents = new List<GameComponent>();
             tag = this;
+
+            childComponents = new List<GameComponent>();
+            content = Game.Content;
+
+            manager = (IStateManager)Game.Services.GetService(typeof(IStateManager));
         }
 
         #endregion
 
-        #region XNA Drawable Game Component Methods
+        #region Methods
 
-        public override void Initialize()
+        protected override void LoadContent()
         {
-            base.Initialize();
+            base.LoadContent();
         }
 
         public override void Update(GameTime gameTime)
@@ -60,36 +80,27 @@ namespace Onwards
                     component.Update(gameTime);
                 }
             }
+
             base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {
-            DrawableGameComponent drawComponent;
+            base.Draw(gameTime);
 
             foreach (GameComponent component in childComponents)
             {
-                if (component is DrawableGameComponent)
+                if (component is DrawableGameComponent &&
+                    ((DrawableGameComponent)component).Visible)
                 {
-                    drawComponent = component as DrawableGameComponent;
-
-                    if (drawComponent.Visible)
-                    {
-                        drawComponent.Draw(gameTime);
-                    }
+                    ((DrawableGameComponent)component).Draw(gameTime);
                 }
             }
-
-            base.Draw(gameTime);
         }
 
-        #endregion
-
-        #region GameState Method Region
-
-        internal protected virtual void StateChange(object sender, EventArgs e)
+        protected internal virtual void StateChanged(object sender, EventArgs e)
         {
-            if (StateManager.CurrentState == Tag)
+            if (manager.CurrentState == tag)
             {
                 Show();
             }
@@ -99,10 +110,11 @@ namespace Onwards
             }
         }
 
-        protected virtual void Show()
+        public virtual void Show()
         {
-            Visible = true;
             Enabled = true;
+            Visible = true;
+
             foreach (GameComponent component in childComponents)
             {
                 component.Enabled = true;
@@ -110,13 +122,14 @@ namespace Onwards
                 {
                     ((DrawableGameComponent)component).Visible = true;
                 }
-            }
+            }       
         }
 
-        protected virtual void Hide()
+        public virtual void Hide()
         {
-            Visible = false;
             Enabled = false;
+            Visible = false;
+
             foreach (GameComponent component in childComponents)
             {
                 component.Enabled = false;
@@ -130,3 +143,4 @@ namespace Onwards
         #endregion
     }
 }
+ 
