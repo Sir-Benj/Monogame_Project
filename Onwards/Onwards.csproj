@@ -44,7 +44,7 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="Components\InputHandler.cs" />
-    <Compile Include="Components\MenuCore.cs" />
+    <Compile Include="Components\BaseMenu.cs" />
     <Compile Include="GameStates\BaseGameState.cs" />
     <Compile Include="GameStates\TitleScreenState.cs" />
     <Compile Include="InputHandler.cs" />
