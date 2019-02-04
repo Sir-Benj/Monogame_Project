@@ -12,14 +12,12 @@ using Onwards.Components;
 
 namespace Onwards.GameStates
 {
-    public interface ITitleScreenState : IGameState
+    public interface IMainMenuState : IGameState
     {
-        Rectangle BGCloudDest { get; }
-        Rectangle BGMountDest { get; }
-        Rectangle BGFollowCloud { get; }
-        Rectangle BGFollowMount { get; }
+
     }
-    public class TitleScreenState : BaseGameState, ITitleScreenState
+
+    public class MainMenuState : BaseGameState, IMainMenuState
     {
         #region Fields
 
@@ -28,65 +26,38 @@ namespace Onwards.GameStates
         Texture2D bgTitle;
         Texture2D bgClouds;
         Texture2D bgCloudsFollow;
-        Rectangle bgTitleDest;
-        Rectangle bgMountDest; 
+        Rectangle bgMountDest;
         Rectangle bgCloudDest;
         Rectangle bgFollowMount;
         Rectangle bgFollowCloud;
-        SpriteFont font;
+        SpriteFont menuFont;
         TimeSpan elapsed;
-        Vector2 position;
-        string message;
+        BaseMenu menuMain;
 
         #endregion
-
-        public Rectangle BGMountDest
-        {
-            get { return bgMountDest; }
-        }
-
-        public Rectangle BGCloudDest
-        {
-            get { return bgCloudDest; }
-        }
-
-        public Rectangle BGFollowMount
-        {
-            get { return bgFollowMount; }
-        }
-
-        public Rectangle BGFollowCloud
-        {
-            get { return bgFollowCloud; }
-        }
 
         #region Constructor
 
-        public TitleScreenState(Game game)
-            : base(game)
+        public MainMenuState(Game game)
+            :base(game)
         {
-            game.Services.AddService(typeof(ITitleScreenState), this);
+            game.Services.AddService(typeof(IMainMenuState), this);
         }
 
         #endregion
 
-        #region XNA Methods
+        #region Methods
 
         public override void Initialize()
         {
-            bgTitleDest = Game1.ScreenRectangle;
+            bgMountDest = GameRef.TitleScreenState.BGMountDest;
+            bgFollowMount = GameRef.TitleScreenState.BGFollowMount;
 
-            bgMountDest = Game1.ScreenRectangle;
-            bgFollowMount = Game1.ScreenRectangle;
-            bgFollowMount.X = Game1.ScreenRectangle.Width;
-
-            bgCloudDest = Game1.ScreenRectangle;
-            bgFollowCloud = Game1.ScreenRectangle;
-            bgFollowCloud.X = Game1.ScreenRectangle.Width;
+            bgCloudDest = GameRef.TitleScreenState.BGCloudDest;
+            bgFollowCloud = GameRef.TitleScreenState.BGFollowCloud;
 
             elapsed = TimeSpan.Zero;
-            message = "PRESS A BUTTON OR SPACEBAR";
-
+ 
             base.Initialize();
         }
 
@@ -96,26 +67,50 @@ namespace Onwards.GameStates
             bgMountainsFollow = bgMountains;
             bgClouds = content.Load<Texture2D>("TitleScreen/TitleClouds");
             bgCloudsFollow = bgClouds;
-            bgTitle = content.Load<Texture2D>("TitleScreen/TitleName");
 
-            font = content.Load<SpriteFont>("Fonts/Title");
+            menuFont = content.Load<SpriteFont>("Fonts/Title");
 
-            Vector2 size = font.MeasureString(message);
-            position = new Vector2((Game1.ScreenRectangle.Width - size.X) / 2,
-                       (Game1.ScreenRectangle.Bottom - 50 - font.LineSpacing));
+            Texture2D menuTexture = content.Load<Texture2D>("TitleScreen/MainMenu");
+
+            string[] menuItems = { "NEW GAME", "CONTINUE", "OPTIONS", "EXIT" };
+
+            menuMain = new BaseMenu(menuFont, menuTexture, menuItems);
+
+            Vector2 position = new Vector2();
+
+            position.Y = 20;
+            position.X = Game1.ScreenRectangle.Width - menuMain.Width;
+
+            menuMain.Position = position;
 
             base.LoadContent();
         }
 
         public override void Update(GameTime gameTime)
         {
-            PlayerIndex index = PlayerIndex.One;
-
             elapsed += gameTime.ElapsedGameTime;
 
-            if (InputHandler.KeyReleased(Keys.Space) || InputHandler.ButtonReleased(Buttons.A, index))
+            menuMain.Update(gameTime, PlayerIndex.One);
+            System.Console.WriteLine(menuMain.SelectedIndex);
+
+            if (InputHandler.KeyPressed(Keys.Enter) || InputHandler.ButtonReleased(Buttons.A, PlayerIndex.One))
             {
-                manager.ChangeState((MainMenuState)GameRef.MainMenuState, index);
+                if (menuMain.SelectedIndex == 0)
+                {
+                    InputHandler.FlushInput();
+                }
+                else if (menuMain.SelectedIndex == 1)
+                {
+                    InputHandler.FlushInput();
+                }
+                else if (menuMain.SelectedIndex == 2)
+                {
+                    InputHandler.FlushInput();
+                }
+                else if (menuMain.SelectedIndex == 3)
+                {
+                    Game.Exit();
+                }
             }
 
             bgMountDest.X -= 1;
@@ -135,7 +130,7 @@ namespace Onwards.GameStates
                 bgCloudDest.X = 0;
                 bgFollowCloud.X = bgClouds.Width;
             }
-        
+
             base.Update(gameTime);
         }
 
@@ -147,18 +142,17 @@ namespace Onwards.GameStates
             GameRef.SpriteBatch.Draw(bgMountainsFollow, bgFollowMount, Color.White);
             GameRef.SpriteBatch.Draw(bgClouds, bgCloudDest, Color.White);
             GameRef.SpriteBatch.Draw(bgCloudsFollow, bgFollowCloud, Color.White);
-            GameRef.SpriteBatch.Draw(bgTitle, bgTitleDest, Color.White);
-
-            Color colour = new Color(0f, 0f, 0f, 255f) * 
-                                    (float)Math.Abs(Math.Sin(elapsed.TotalSeconds * 2));
-
-            GameRef.SpriteBatch.DrawString(font, message, position, colour);
 
             GameRef.SpriteBatch.End();
 
             base.Draw(gameTime);
-        }
 
+            GameRef.SpriteBatch.Begin();
+            menuMain.Draw(gameTime, GameRef.SpriteBatch);
+            GameRef.SpriteBatch.End();
+        }
         #endregion
     }
+
+
 }

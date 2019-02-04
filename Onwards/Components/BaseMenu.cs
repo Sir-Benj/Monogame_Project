@@ -92,5 +92,89 @@ namespace Onwards.Components
 
             MeasureMenu();
         }
+
+        #endregion
+
+        #region Methods
+
+        private void SetMenuItems(String[] items)
+        {
+            menuItems.Clear();
+            menuItems.AddRange(items);
+            MeasureMenu();
+
+            selectedIndex = 0;
+        }
+
+        private void MeasureMenu()
+        {
+            width = menuTexture.Width;
+            height = 0;
+
+            foreach (string s in menuItems)
+            {
+                Vector2 size = menuFont.MeasureString(s);
+
+                if (size.X > width)
+                {
+                    width = (int)size.X;
+                    height += menuTexture.Height;
+                }
+
+                height -= 50;
+            }
+        }
+
+        public void Update(GameTime gameTime, PlayerIndex index)
+        {
+            if (InputHandler.KeyPressed(Keys.Up) || InputHandler.ButtonPressed(Buttons.DPadUp, index))
+            {
+                selectedIndex--;
+                if (selectedIndex < 0)
+                {
+                    selectedIndex = 0;
+                }
+            }
+            else if (InputHandler.KeyPressed(Keys.Down) || InputHandler.ButtonPressed(Buttons.DPadDown, index))
+            {
+                selectedIndex++;
+                {
+                    if (selectedIndex > menuItems.Count - 1)
+                    {
+                        selectedIndex = menuItems.Count - 1;
+                    }
+                }
+            }
+        }
+
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            Vector2 menuPosition = position;
+            Color myColour;
+
+            for (int i = 0; i < menuItems.Count; i++)
+            {
+                if (i == selectedIndex)
+                {
+                    myColour = highlightColour;
+                }
+                else
+                {
+                    myColour = baseColour;
+                }
+
+                spriteBatch.Draw(menuTexture, menuPosition, Color.White);
+
+                Vector2 textSize = menuFont.MeasureString(menuItems[i]);
+
+                Vector2 textPosition = menuPosition + new Vector2((int)(menuTexture.Width -
+                                       textSize.X) / 2, (int)(menuTexture.Height - textSize.Y) / 2);
+
+                spriteBatch.DrawString(menuFont, menuItems[i], textPosition, myColour);
+
+                menuPosition.Y += menuTexture.Height + 50;
+            }
+        }
+        #endregion
     }
 }

@@ -84,11 +84,9 @@ namespace Onwards.Components
         #endregion
 
         #region Keyboard Methods
-
         public static void FlushInput()
         {
             currKBState = prevKBState;
-
             currGPStates = (GamePadState[])prevGPStates.Clone();
         }
 
@@ -127,7 +125,6 @@ namespace Onwards.Components
         {
             return currGPStates[(int)index].IsButtonDown(button);
         }
-
         #endregion
     }
 }

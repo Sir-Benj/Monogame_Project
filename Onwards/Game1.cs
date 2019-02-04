@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using Onwards.GameStates;
+using Onwards.Components;
 using Onwards.StateManager;
 
 namespace Onwards
@@ -14,7 +15,9 @@ namespace Onwards
         SpriteBatch spriteBatch;
 
         GameStateManager gameStateManager;
+
         ITitleScreenState titleScreenState;
+        IMainMenuState mainMenuState;
 
         static Rectangle screenRectangle;
         #endregion
@@ -30,6 +33,17 @@ namespace Onwards
         {
             get { return screenRectangle; }
         }
+
+        public ITitleScreenState TitleScreenState
+        {
+            get { return titleScreenState; }
+        }
+
+        public IMainMenuState MainMenuState
+        {
+            get { return mainMenuState; }
+        }
+
         #endregion
 
         public Game1()
@@ -46,6 +60,7 @@ namespace Onwards
             Components.Add(gameStateManager);
 
             titleScreenState = new TitleScreenState(this);
+            mainMenuState = new MainMenuState(this);
 
             gameStateManager.ChangeState((TitleScreenState)titleScreenState, PlayerIndex.One);
         }
@@ -53,6 +68,7 @@ namespace Onwards
         protected override void Initialize()
         {
             Components.Add(new InputHandler(this));
+
             base.Initialize();
         }
 
@@ -68,9 +84,6 @@ namespace Onwards
 
         protected override void Update(GameTime gameTime)
         {
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                //Exit();
-
             if (InputHandler.KeyPressed(Keys.Escape) || InputHandler.ButtonPressed(Buttons.Back, PlayerIndex.One))
             {
                 Exit();
